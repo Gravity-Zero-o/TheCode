@@ -50,6 +50,51 @@ int main(void)
 
     return 0;
 }
+
+/*
+
+ADXL335
+
+note:vcc-->5v ,but ADXL335 Vs is 3.3V
+
+The circuit:
+
+      5V: VCC
+
+analog 1: x-axis
+
+analog 2: y-axis
+
+analog 3: z-axis
+
+*/
+
+//const int xpin = 1;                  // x-axis of the accelerometer
+
+//const int ypin = 2;                  // y-axis
+
+const int zpin = 0;                  // z-axis (only on 3-axis models)
+
+
+
+float adxl_loop()
+
+{
+  int z = analogRead(zpin);
+
+ 
+
+  float zero_G = 512.0; //ADC is 0~1023  the zero g output equal to Vs/2
+
+                      //ADXL335 power supply by Vs 3.3V
+
+  float scale = 102.3;  //ADXL335330 Sensitivity is 330mv/g
+
+                       //330 * 1024/3.3/1000  
+
+return(((float)z - zero_G)/scale);
+}
+
 //加速度传感器来检测下落瞬间—-https://zhuanlan.zhihu.com/p/100740936
 /*
 Arduinoand MPU6050 Accelerometerand Gyroscope Sensor Tutorial
@@ -265,11 +310,11 @@ void setup() {
 
 }
 void loop() {
-    if (gravity_loop() > 9)    //当z轴加速度大于9时开始计时
-        delay(1000);//这个time是我们计算的开伞时刻，time-2是提前2秒，当然这里换算成毫秒
+    if (gravity_loop() > 9)    //当z轴加速度大于9时开始计时,使用MPU6050或者使用ADXL335
+        delay(450);//450ms后开盖子，当然这里换算成毫秒
     stepup_loop();
     triger();
-    delay(2000);      //4秒后，关闭盖子
+    delay(1000);      //4秒后，关闭盖子
     stepdown_loop();
     //if (voice_loop()<5)
         //气囊?
